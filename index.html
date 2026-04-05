@@ -105,7 +105,7 @@ function sendEmail() {
   if (!validateForm(name, email, message)) return;
   if (!canSubmit()) return;
 
-  emailjs.send("service_4zyhc0i", "template_3rrkzco", {
+  emailjs.send("service_4zyhc0i", "template_3rrkzco"), {
     name: name,
     email: email,
     message: message
