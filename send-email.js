@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "origin": "http://localhost"  // required by EmailJS REST API
+        "origin": "https://sarikaportfolio-gilt.vercel.app"  // required by EmailJS REST API
       },
       body: JSON.stringify({
         service_id:  process.env.EMAILJS_SERVICE_ID,
