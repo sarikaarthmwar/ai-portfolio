@@ -401,11 +401,14 @@
         </div>
       </div>
       <div class="contact-form">
-        <input type="text" placeholder="Your Name">
-        <input type="email" placeholder="Your Email">
-        <textarea placeholder="Your Message"></textarea>
-        <button>Send Message</button>
-      </div>
+  <input type="text" id="name" placeholder="Your Name" required>
+  <input type="email" id="email" placeholder="Your Email" required>
+  <textarea id="message" placeholder="Your Message" required></textarea>
+  
+  <button onclick="sendEmail()">Send Message</button>
+  
+  <p id="status" style="font-size:13px;color:var(--teal-light);margin-top:6px;"></p>
+</div>
     </div>
   </div>
 </div>
