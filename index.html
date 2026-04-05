@@ -1,4 +1,4 @@
-review once the entire file <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -109,6 +109,7 @@ review once the entire file <!DOCTYPE html>
   .contact-form textarea { resize: vertical; min-height: 110px; }
   .contact-form button { background: var(--teal); color: #fff; border: none; padding: 13px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: var(--font-sans); transition: background 0.2s; }
   .contact-form button:hover { background: var(--teal-light); }
+  .contact-form button:disabled { opacity: 0.6; cursor: not-allowed; }
   footer { text-align: center; padding: 30px 5vw; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
   .fade-in { opacity: 0; transform: translateY(24px); animation: fadeUp 0.6s ease forwards; }
   @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
@@ -391,34 +392,48 @@ review once the entire file <!DOCTYPE html>
     <div class="section-label">Get In Touch</div>
     <div class="section-title">Open to meaningful conversations</div>
     <div class="contact-grid">
+
+      <!-- Left column: contact info -->
       <div>
         <p style="color:var(--text-muted);margin-bottom:28px;line-height:1.8;">Whether it's about S2P transformation, AI-led delivery, or building high-performance global teams — I'd love to connect.</p>
         <div class="contact-info">
-          <div class="contact-item"><div class="contact-icon">📍</div><span>Pune, Maharashtra, India</span></div>
-          <div class="contact-item"><div class="contact-icon">📞</div><span>+91 9823366015</span></div>
-          <div class="contact-item"><div class="contact-icon">✉️</div><span>Sarika.arthamwar@gmail.com</span></div>
-         <div class="contact-item">
-  <div class="contact-icon">🔗</div>
-  <a href="https://www.linkedin.com/in/sarika-harale-arthmwar-9084133b" 
-     target="_blank" 
-     style="color:var(--teal-light); text-decoration:none;">
-    linkedin.com/in/sarika-harale-arthmwar-9084133b
-  </a>
-</div>
-        <div class="contact-form">
+          <div class="contact-item">
+            <div class="contact-icon">📍</div>
+            <span>Pune, Maharashtra, India</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <span>+91 9823366015</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">✉️</div>
+            <span>Sarika.arthamwar@gmail.com</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">🔗</div>
+            <a href="https://www.linkedin.com/in/sarika-harale-arthmwar-9084133b"
+               target="_blank"
+               style="color:var(--teal-light); text-decoration:none; font-size:14px;">
+              linkedin.com/in/sarika-harale-arthmwar-9084133b
+            </a>
+          </div>
+        </div>
+      </div>
 
-  <!-- 🛡️ Hidden spam trap -->
-  <input type="text" id="company" style="display:none">
+      <!-- Right column: contact form (calls /api/send-email — no keys in browser) -->
+      <div class="contact-form">
+        <!-- 🛡️ Honeypot spam trap — hidden from real users, bots fill it -->
+        <input type="text" id="company" style="display:none" tabindex="-1" autocomplete="off">
 
-  <input type="text" id="name" placeholder="Your Name" required>
-  <input type="email" id="email" placeholder="Your Email" required>
-  <textarea id="message" placeholder="Your Message" required></textarea>
-  
-  <button onclick="sendEmail()">Send Message</button>
-  
-  <p id="status" style="font-size:13px;color:var(--teal-light);margin-top:6px;"></p>
+        <input type="text"  id="name"    placeholder="Your Name"    required>
+        <input type="email" id="email"   placeholder="Your Email"   required>
+        <textarea           id="message" placeholder="Your Message" required></textarea>
 
-</div>
+        <button id="send-btn" onclick="sendEmail()">Send Message</button>
+
+        <p id="status" style="font-size:13px; margin-top:6px;"></p>
+      </div>
+
     </div>
   </div>
 </div>
@@ -427,51 +442,41 @@ review once the entire file <!DOCTYPE html>
   <p>© 2026 Sarika Arthamwar · Program Director · Pune, India</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
+<!-- ✅ NO EmailJS SDK here — keys live only in /api/send-email.js on the server -->
 <script>
-  // 🔐 Initialize EmailJS
-  (function(){
-    emailjs.init("YOUR_PUBLIC_KEY");
-  })();
-
+  /* ─── Form helpers ─────────────────────────────────────── */
   let lastSubmitted = 0;
 
   function validateForm(name, email, message) {
-
-    // Trim values
-    name = name.trim();
-    email = email.trim();
+    name    = name.trim();
+    email   = email.trim();
     message = message.trim();
 
     if (!name || !email || !message) {
-      alert("All fields are required");
+      showStatus("All fields are required.", "error");
       return false;
     }
 
-    // 🔐 Block too many special characters
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailPattern.test(email)) {
+      showStatus("Please enter a valid email address.", "error");
+      return false;
+    }
+
+    if (message.length < 10) {
+      showStatus("Message is too short (min 10 characters).", "error");
+      return false;
+    }
+
+    // Block mostly-special-character messages
     const specialChars = message.replace(/[a-zA-Z0-9\s]/g, "");
     if (specialChars.length > message.length * 0.4) {
-      alert("Message looks suspicious");
+      showStatus("Message looks suspicious. Please use plain text.", "error");
       return false;
     }
 
-    // 🔐 Ensure meaningful text
     if (!/[a-zA-Z]/.test(message)) {
-      alert("Message should contain valid text");
-      return false;
-    }
-
-    // 📧 Email validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!email.match(emailPattern)) {
-      alert("Enter valid email");
-      return false;
-    }
-
-    // 📏 Minimum message length
-    if (message.length < 10) {
-      alert("Message too short");
+      showStatus("Message should contain readable text.", "error");
       return false;
     }
 
@@ -481,146 +486,91 @@ review once the entire file <!DOCTYPE html>
   function canSubmit() {
     const now = Date.now();
     if (now - lastSubmitted < 30000) {
-      alert("Please wait 30 seconds before sending again");
+      showStatus("Please wait 30 seconds before sending again.", "error");
       return false;
     }
     lastSubmitted = now;
     return true;
   }
 
-  function sendEmail() {
+  function showStatus(msg, type) {
+    const el = document.getElementById("status");
+    el.textContent = msg;
+    el.style.color = type === "error" ? "#e05c5c" : "var(--teal-light)";
+  }
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
+  /* ─── Main send function — calls Vercel serverless function ─── */
+  async function sendEmail() {
+    const name    = document.getElementById("name").value;
+    const email   = document.getElementById("email").value;
     const message = document.getElementById("message").value;
+    const btn     = document.getElementById("send-btn");
 
-    // 🚫 Spam trap
-    if (document.getElementById("company").value !== "") {
-      return;
-    }
+    // 🛡️ Honeypot — bots fill hidden fields, humans don't
+    if (document.getElementById("company").value !== "") return;
 
-    // ✅ Validation
+    // ✅ Validate
     if (!validateForm(name, email, message)) return;
 
     // ⏱️ Rate limit
     if (!canSubmit()) return;
 
-    // 📩 Send email
-    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
-      name: name,
-      email: email,
-      message: message
-    })
-    .then(function() {
-      document.getElementById("status").innerText = "Message sent successfully!";
+    // 🔄 Loading state
+    btn.disabled = true;
+    btn.textContent = "Sending…";
+    document.getElementById("status").textContent = "";
 
-      // ✨ Clear form
-      document.getElementById("name").value = "";
-      document.getElementById("email").value = "";
-      document.getElementById("message").value = "";
+    try {
+      // 📡 POST to Vercel serverless function — keys are NEVER in this file
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name:    name.trim(),
+          email:   email.trim(),
+          message: message.trim()
+        })
+      });
 
-    }, function(error) {
-      document.getElementById("status").innerText = "Failed to send message";
-    });
-
-  }
-</script>
-<script>
-function animateCounter(el, targetVal, formatter, duration) {
-  let start = 0, step = targetVal / (duration / 16);
-  let t = setInterval(() => {
-    start = Math.min(start + step, targetVal);
-    el.textContent = formatter(Math.round(start));
-    if (start >= targetVal) clearInterval(t);
-  }, 16);
-}
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    animateCounter(document.getElementById('stat1'), 20, v => v + '+', 1200);
-    animateCounter(document.getElementById('stat2'), 5, v => '$' + v + 'M+', 1400);
-    animateCounter(document.getElementById('stat3'), 30, v => v + '%', 1200);
-    animateCounter(document.getElementById('stat4'), 150, v => v + '+', 1400);
-  }, 400);
-});
-</script>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-<script>
-  // 🔐 Initialize EmailJS
-  (function(){
-    emailjs.init("YOUR_PUBLIC_KEY");
-  })();
-
-  let lastSubmitted = 0;
-
-  function validateForm(name, email, message) {
-    if (!name || !email || !message) {
-      alert("All fields are required");
-      return false;
+      if (res.ok) {
+        showStatus("✅ Message sent successfully! I'll get back to you soon.", "success");
+        document.getElementById("name").value    = "";
+        document.getElementById("email").value   = "";
+        document.getElementById("message").value = "";
+        lastSubmitted = Date.now(); // reset timer after successful send
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showStatus("❌ " + (data.error || "Failed to send. Please email me directly."), "error");
+      }
+    } catch (err) {
+      showStatus("❌ Network error. Please check your connection and try again.", "error");
+      console.error("Send error:", err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Send Message";
     }
-
-    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-    if (!email.match(emailPattern)) {
-      alert("Enter valid email");
-      return false;
-    }
-
-    if (message.length < 10) {
-      alert("Message too short");
-      return false;
-    }
-
-    return true;
   }
 
-  function canSubmit() {
-    const now = Date.now();
-    if (now - lastSubmitted < 30000) {
-      alert("Please wait 30 seconds before sending again");
-      return false;
-    }
-    lastSubmitted = now;
-    return true;
+  /* ─── Counter animations ───────────────────────────────── */
+  function animateCounter(el, targetVal, formatter, duration) {
+    let start = 0;
+    const step = targetVal / (duration / 16);
+    const t = setInterval(() => {
+      start = Math.min(start + step, targetVal);
+      el.textContent = formatter(Math.round(start));
+      if (start >= targetVal) clearInterval(t);
+    }, 16);
   }
 
-  function sendEmail() {
-
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const message = document.getElementById("message").value;
-
-    // 🚫 Spam trap
-    if (document.getElementById("company").value !== "") {
-      return;
-    }
-
-    // ✅ Validation
-    if (!validateForm(name, email, message)) return;
-
-    // ⏱️ Rate limit
-    if (!canSubmit()) return;
-
-    // 📩 Send email
-    emailjs.send("service_4zyhc0i", "template_3rrkzco", {
-      name: name,
-      email: email,
-      message: message
-    })
-    .then(function() {
-      document.getElementById("status").innerText = "Message sent successfully!";
-      
-      // ✨ Clear form (nice UX)
-      document.getElementById("name").value = "";
-      document.getElementById("email").value = "";
-      document.getElementById("message").value = "";
-
-    }, function(error) {
-      document.getElementById("status").innerText = "Failed to send message";
-    });
-
-  }
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      animateCounter(document.getElementById("stat1"), 20,  v => v + "+",   1200);
+      animateCounter(document.getElementById("stat2"), 5,   v => "$" + v + "M+", 1400);
+      animateCounter(document.getElementById("stat3"), 30,  v => v + "%",   1200);
+      animateCounter(document.getElementById("stat4"), 150, v => v + "+",   1400);
+    }, 400);
+  });
 </script>
-}
-</script>
+
 </body>
 </html>
