@@ -399,7 +399,6 @@
           <div class="contact-item"><div class="contact-icon">✉️</div><span>Sarika.arthamwar@gmail.com</span></div>
           <div class="contact-item"><div class="contact-icon">🔗</div><span style="color:var(--teal-light)">linkedin.com/in/sarika-harale-arthmwar</span></div>
         </div>
-      </div>
       <div class="contact-form">
   <input type="text" id="name" placeholder="Your Name" required>
   <input type="email" id="email" placeholder="Your Email" required>
@@ -434,6 +433,43 @@ window.addEventListener('load', () => {
     animateCounter(document.getElementById('stat4'), 150, v => v + '+', 1400);
   }, 400);
 });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){
+  emailjs.init("Rk3tl5yA0sQFs5bBy");
+})();
+
+function sendEmail() {
+  var name = document.getElementById("name").value;
+  var email = document.getElementById("email").value;
+  var message = document.getElementById("message").value;
+  var status = document.getElementById("status");
+
+  if (!name || !email || !message) {
+    status.innerText = "Please fill all fields.";
+    return;
+  }
+
+  status.innerText = "Sending...";
+
+  var params = {
+    from_name: name,
+    from_email: email,
+    message: message
+  };
+
+  emailjs.send("service_4zyhc0i", "template_3rrkzco", params)
+    .then(function () {
+      status.innerText = "Message sent successfully!";
+      document.getElementById("name").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("message").value = "";
+    })
+    .catch(function () {
+      status.innerText = "Failed to send. Try again.";
+    });
+}
 </script>
 </body>
 </html>
