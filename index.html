@@ -405,8 +405,11 @@
     linkedin.com/in/sarika-harale-arthmwar-9084133b
   </a>
 </div>
-        </div>
-      <div class="contact-form">
+        <div class="contact-form">
+
+  <!-- 🛡️ Hidden spam trap -->
+  <input type="text" id="company" style="display:none">
+
   <input type="text" id="name" placeholder="Your Name" required>
   <input type="email" id="email" placeholder="Your Email" required>
   <textarea id="message" placeholder="Your Message" required></textarea>
@@ -414,6 +417,7 @@
   <button onclick="sendEmail()">Send Message</button>
   
   <p id="status" style="font-size:13px;color:var(--teal-light);margin-top:6px;"></p>
+
 </div>
     </div>
   </div>
@@ -422,7 +426,39 @@
 <footer>
   <p>© 2026 Sarika Arthamwar · Program Director · Pune, India</p>
 </footer>
+<script>
+let lastSubmitted = 0;
 
+function validateForm(name, email, message) {
+  if (!name || !email || !message) {
+    alert("All fields are required");
+    return false;
+  }
+
+  const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+  if (!email.match(emailPattern)) {
+    alert("Enter valid email");
+    return false;
+  }
+
+  if (message.length < 10) {
+    alert("Message too short");
+    return false;
+  }
+
+  return true;
+}
+
+function canSubmit() {
+  const now = Date.now();
+  if (now - lastSubmitted < 30000) {
+    alert("Please wait 30 seconds before sending again");
+    return false;
+  }
+  lastSubmitted = now;
+  return true;
+}
+</script>
 <script>
 function animateCounter(el, targetVal, formatter, duration) {
   let start = 0, step = targetVal / (duration / 16);
@@ -442,40 +478,82 @@ window.addEventListener('load', () => {
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <script>
-(function(){
-  emailjs.init("Rk3tl5yA0sQFs5bBy");
-})();
+  // 🔐 Initialize EmailJS
+  (function(){
+    emailjs.init("YOUR_PUBLIC_KEY");
+  })();
 
-function sendEmail() {
-  var name = document.getElementById("name").value;
-  var email = document.getElementById("email").value;
-  var message = document.getElementById("message").value;
-  var status = document.getElementById("status");
+  let lastSubmitted = 0;
 
-  if (!name || !email || !message) {
-    status.innerText = "Please fill all fields.";
-    return;
+  function validateForm(name, email, message) {
+    if (!name || !email || !message) {
+      alert("All fields are required");
+      return false;
+    }
+
+    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+    if (!email.match(emailPattern)) {
+      alert("Enter valid email");
+      return false;
+    }
+
+    if (message.length < 10) {
+      alert("Message too short");
+      return false;
+    }
+
+    return true;
   }
 
-  status.innerText = "Sending...";
+  function canSubmit() {
+    const now = Date.now();
+    if (now - lastSubmitted < 30000) {
+      alert("Please wait 30 seconds before sending again");
+      return false;
+    }
+    lastSubmitted = now;
+    return true;
+  }
 
-  var params = {
-    from_name: name,
-    from_email: email,
-    message: message
-  };
+  function sendEmail() {
 
-  emailjs.send("service_4zyhc0i", "template_3rrkzco", params)
-    .then(function () {
-      status.innerText = "Message sent successfully!";
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const message = document.getElementById("message").value;
+
+    // 🚫 Spam trap
+    if (document.getElementById("company").value !== "") {
+      return;
+    }
+
+    // ✅ Validation
+    if (!validateForm(name, email, message)) return;
+
+    // ⏱️ Rate limit
+    if (!canSubmit()) return;
+
+    // 📩 Send email
+    emailjs.send("service_4zyhc0i", "template_3rrkzco", {
+      name: name,
+      email: email,
+      message: message
+    })
+    .then(function() {
+      document.getElementById("status").innerText = "Message sent successfully!";
+      
+      // ✨ Clear form (nice UX)
       document.getElementById("name").value = "";
       document.getElementById("email").value = "";
       document.getElementById("message").value = "";
-    })
-    .catch(function () {
-      status.innerText = "Failed to send. Try again.";
+
+    }, function(error) {
+      document.getElementById("status").innerText = "Failed to send message";
     });
+
+  }
+</script>
 }
 </script>
 </body>
