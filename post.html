@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post | Sarika Arthamwar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a; --card: #141414;
+      --border: rgba(255,255,255,0.08);
+      --accent: #c9a96e; --accent2: #e8c98a;
+      --text: #f0ede8; --muted: #888880; --muted2: #5a5a55;
+      --tag-bg: rgba(201,169,110,0.12); --tag-text: #c9a96e;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.7; min-height: 100vh; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,0.93); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    .back-btn { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--muted); font-size: 0.82rem; text-decoration: none; letter-spacing: 0.04em; transition: color 0.2s; margin-bottom: 2rem; }
+    .back-btn:hover { color: var(--accent); }
+
+    .post-wrap { max-width: 740px; margin: 0 auto; padding: 110px 2rem 6rem; }
+
+    .post-meta { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .tag { display: inline-block; padding: 0.22rem 0.7rem; border-radius: 100px; background: var(--tag-bg); color: var(--tag-text); font-size: 0.72rem; letter-spacing: 0.06em; font-weight: 500; }
+    .meta-item { color: var(--muted2); font-size: 0.8rem; }
+
+    h1.post-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 400; line-height: 1.12; margin-bottom: 1.5rem; }
+
+    .post-excerpt { font-size: 1.1rem; color: var(--muted); line-height: 1.8; margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
+
+    .post-body { font-size: 1rem; line-height: 1.85; color: var(--text); }
+    .post-body h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; font-weight: 400; margin: 2.5rem 0 1rem; color: var(--text); }
+    .post-body h3 { font-size: 1.05rem; font-weight: 500; margin: 2rem 0 0.8rem; color: var(--text); letter-spacing: 0.02em; }
+    .post-body p { margin-bottom: 1.4rem; }
+    .post-body ul, .post-body ol { margin: 0 0 1.4rem 1.5rem; }
+    .post-body li { margin-bottom: 0.5rem; }
+    .post-body strong { font-weight: 500; color: var(--accent); }
+    .post-body blockquote { border-left: 2px solid var(--accent); padding: 0.8rem 1.5rem; margin: 2rem 0; color: var(--muted); font-style: italic; font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+    .post-body hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    .author-card { margin: 3rem 0 0; padding: 2rem; border: 1px solid var(--border); border-radius: 16px; background: var(--card); display: flex; gap: 1.2rem; align-items: center; }
+    .author-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(201,169,110,0.15); border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--accent); flex-shrink: 0; }
+    .author-info h4 { font-weight: 500; font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .author-info p { color: var(--muted); font-size: 0.83rem; }
+
+    .loading { display: flex; justify-content: center; align-items: center; padding: 6rem; color: var(--muted); gap: 0.8rem; }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .not-found { text-align: center; padding: 5rem 2rem; color: var(--muted); }
+    .not-found h2 { font-family: 'DM Serif Display', serif; font-size: 2rem; margin-bottom: 1rem; color: var(--text); }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted2); font-size: 0.8rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    @media (max-width: 768px) { .nav-links { display: none; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="https://sarikaportfolio-gilt.vercel.app/" class="nav-brand">SA</a>
+  <ul class="nav-links">
+    <li><a href="https://sarikaportfolio-gilt.vercel.app/#about">About</a></li>
+    <li><a href="https://sarikaportfolio-gilt.vercel.app/#experience">Experience</a></li>
+    <li><a href="blog.html">Insights</a></li>
+    <li><a href="https://sarikaportfolio-gilt.vercel.app/#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="post-wrap" id="post-wrap">
+  <div class="loading"><div class="spinner"></div> Loading…</div>
+</div>
+
+<footer>
+  <p>© 2026 Sarika Arthamwar &nbsp;·&nbsp; <a href="blog.html">← Back to Insights</a> &nbsp;·&nbsp; Pune, India</p>
+</footer>
+
+<script>
+  // Same URL as blog.html — paste your Google Sheet CSV URL here
+  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/17VW4_WcovTIWzguIEg8Em2fdUX1w7Q3XfGBoo4L8DOI/edit?usp=sharing';
+
+  const SAMPLE_POSTS = [
+    { id:'1', slug:'ai-agents-s2p', title:'How AI Agents Are Reshaping Enterprise S2P Delivery', excerpt:'After building Playwright-based validation frameworks and AI agents for RTM at scale, here\'s what I\'ve learned about where AI genuinely accelerates delivery — and where it still needs a human hand.', category:'AI & Automation', date:'2025-03-15', readTime:'7', views:1240, popularity:98, content:`## The promise vs. the reality\n\nEvery enterprise software vendor now claims their platform is "AI-powered." But when you're running a real S2P transformation across multiple geographies, the difference between marketing and meaningful acceleration becomes very clear, very fast.\n\nHere's what I've seen actually work — and where the hype falls short.\n\n## Where AI genuinely accelerates delivery\n\n**Requirement Traceability Matrices (RTM)** are the unsung heroes of enterprise delivery. They're also brutally manual. We built AI agents that parse requirements documents, map them to configuration items, and flag gaps in traceability. What took a week now takes hours — and the coverage is better.\n\n**Configuration validation** is another high-impact area. Using Playwright-based automation, we validate SaaS configurations against agreed requirements automatically. This eliminated a full round of manual testing from our cycle.\n\n## Where humans still lead\n\nStakeholder alignment, escalation management, and the judgment calls that come with ambiguous requirements — AI doesn't touch these yet. Nor should it. The value of a program director isn't in the documentation; it's in reading a room and making the call.\n\n---\n\n*The bottom line: AI is a multiplier for delivery capacity, not a replacement for delivery judgment.*` },
+    { id:'2', slug:'delivery-governance', title:'Building Delivery Governance That Actually Works', excerpt:'Most governance models look good in slide decks and collapse under real program pressure.', category:'Governance', date:'2025-02-10', readTime:'5', views:890, popularity:85, content:`## Why most governance models fail\n\nI've seen hundreds of governance frameworks across my career. The ones that fail share a common trait: they're designed for reporting, not for decision-making.\n\n## What good governance actually looks like\n\n**Escalation pathways are pre-agreed.** Not in theory — actually documented, signed off, and tested before go-live pressure hits.\n\n**Risk visibility is proactive.** Weekly RAG status updates are not governance. Real governance surfaces risks 3-4 weeks before they become issues.\n\n**Decisions are logged, not just made.** Audit trails matter — both for accountability and for institutional memory across long programs.\n\n---\n\n*Governance is only as good as the behaviours it drives. Build for decisions, not decks.*` },
+    { id:'3', slug:'cxo-conversation', title:'The CxO Conversation: What It Takes to Earn the Room', excerpt:'Engaging executive stakeholders on enterprise programs is a skill built over years of failure and iteration.', category:'Leadership', date:'2025-01-22', readTime:'6', views:1050, popularity:92, content:`## What executives actually want to hear\n\nSenior leaders in enterprise programs don't want status updates. They want to know: is this program on track to deliver the business outcome we signed up for? And if not — what are you doing about it?\n\n## Earning trust in the first meeting\n\nCome with data. Come with a clear point of view. Come with honesty about risks. The executives I've worked with across Fortune 1000 organisations — regardless of sector or geography — respond to directness paired with a plan.\n\n## The question that changes everything\n\n*"What would need to be true for this program to fail?"* I ask this in every executive kick-off. The answers it surfaces — assumptions, dependencies, political dynamics — are worth more than a full risk register.` },
+  ];
+
+  function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+    return lines.slice(1).map(line => {
+      const vals = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = (vals[i]||'').trim().replace(/^"|"$/g,''); });
+      obj.views = parseInt(obj.views)||0;
+      return obj;
+    }).filter(p => p.title);
+  }
+
+  function markdownToHtml(md) {
+    if (!md) return '';
+    return md
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+      .replace(/^---$/gm, '<hr>')
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, s => `<ul>${s}</ul>`)
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[hbup]|<li|<bl|<hr)(.+)$/gm, '$1')
+      .split('\n').filter(Boolean).map(line => {
+        if (line.startsWith('<h') || line.startsWith('<ul') || line.startsWith('<blockquote') || line.startsWith('<hr')) return line;
+        if (line.startsWith('</p><p>')) return line;
+        return line;
+      }).join('\n')
+      .replace(/^([^<\n].+)$/gm, (m) => m.startsWith('<') ? m : `<p>${m}</p>`);
+  }
+
+  function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  }
+
+  function renderPost(post) {
+    document.title = `${post.title} | Sarika Arthamwar`;
+    const wrap = document.getElementById('post-wrap');
+    wrap.innerHTML = `
+      <a href="blog.html" class="back-btn">← Back to Insights</a>
+      <div class="post-meta">
+        <span class="tag">${post.category}</span>
+        <span class="meta-item">${formatDate(post.date)}</span>
+        <span class="meta-item">·</span>
+        <span class="meta-item">${post.readTime} min read</span>
+        <span class="meta-item">·</span>
+        <span class="meta-item">${post.views.toLocaleString()} views</span>
+      </div>
+      <h1 class="post-title">${post.title}</h1>
+      <p class="post-excerpt">${post.excerpt}</p>
+      <div class="post-body">${markdownToHtml(post.content)}</div>
+      <div class="author-card">
+        <div class="author-avatar">SA</div>
+        <div class="author-info">
+          <h4>Sarika Arthamwar</h4>
+          <p>Program Director · S2P · AI-Led Delivery · SaaS Transformation — 20+ years delivering enterprise-scale programs for Fortune 1000 clients globally.</p>
+        </div>
+      </div>`;
+  }
+
+  function renderNotFound() {
+    document.getElementById('post-wrap').innerHTML = `
+      <a href="blog.html" class="back-btn">← Back to Insights</a>
+      <div class="not-found">
+        <h2>Article not found</h2>
+        <p>This article may have been moved or removed.</p>
+      </div>`;
+  }
+
+  async function loadPost() {
+    const params = new URLSearchParams(location.search);
+    const postId = params.get('id');
+    if (!postId) { renderNotFound(); return; }
+
+    let posts = SAMPLE_POSTS;
+
+    if (SHEET_CSV_URL !== 'https://docs.google.com/spreadsheets/d/17VW4_WcovTIWzguIEg8Em2fdUX1w7Q3XfGBoo4L8DOI/edit?usp=sharing') {
+      try {
+        const res = await fetch(SHEET_CSV_URL);
+        const text = await res.text();
+        posts = parseCSV(text);
+      } catch(e) { posts = SAMPLE_POSTS; }
+    }
+
+    const post = posts.find(p => p.id === postId || p.slug === postId);
+    post ? renderPost(post) : renderNotFound();
+  }
+
+  loadPost();
+</script>
+</body>
+</html>

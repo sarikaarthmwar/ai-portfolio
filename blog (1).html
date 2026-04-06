@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insights | Sarika Arthamwar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a; --bg2: #111; --bg3: #161616; --card: #141414;
+      --border: rgba(255,255,255,0.08); --border-h: rgba(255,255,255,0.18);
+      --accent: #c9a96e; --accent2: #e8c98a;
+      --text: #f0ede8; --muted: #888880; --muted2: #5a5a55;
+      --tag-bg: rgba(201,169,110,0.12); --tag-text: #c9a96e;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.7; min-height: 100vh; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,0.93); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); }
+
+    .hero { padding: 130px 2rem 60px; max-width: 1100px; margin: 0 auto; }
+    .eyebrow { font-size: 0.75rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 400; line-height: 1.1; margin-bottom: 1.2rem; }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+    .hero p { color: var(--muted); font-size: 1rem; max-width: 500px; line-height: 1.8; }
+
+    .controls { max-width: 1100px; margin: 0 auto; padding: 0 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-btn { padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.8rem; letter-spacing: 0.04em; cursor: pointer; transition: all 0.2s; }
+    .filter-btn:hover { border-color: var(--border-h); color: var(--text); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0a0a; font-weight: 500; }
+
+    .sort-group { display: flex; align-items: center; gap: 0.5rem; }
+    .sort-label { font-size: 0.78rem; color: var(--muted2); }
+    .sort-select { background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.35rem 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; outline: none; }
+    .sort-select:focus { border-color: var(--accent); }
+
+    .featured-wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem 2.5rem; }
+    .featured-post { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--card); transition: border-color 0.3s; text-decoration: none; color: inherit; }
+    .featured-post:hover { border-color: var(--border-h); }
+    .feat-visual { background: #12100a; padding: 3rem; display: flex; flex-direction: column; justify-content: flex-end; min-height: 360px; position: relative; overflow: hidden; }
+    .feat-badge { position: absolute; top: 1.5rem; left: 2rem; font-size: 0.62rem; letter-spacing: 0.25em; color: var(--accent); font-weight: 500; }
+    .feat-big { font-family: 'DM Serif Display', serif; font-size: 6rem; line-height: 1; color: rgba(201,169,110,0.1); position: absolute; bottom: 1rem; right: 1.5rem; }
+    .feat-content { padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
+    .feat-content h2 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 400; line-height: 1.25; margin-bottom: 1rem; }
+    .feat-content p { color: var(--muted); font-size: 0.92rem; line-height: 1.8; margin-bottom: 1.8rem; }
+    .read-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.04em; text-decoration: none; transition: gap 0.2s; }
+    .read-link:hover { gap: 0.9rem; }
+
+    .post-meta { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tag { display: inline-block; padding: 0.22rem 0.7rem; border-radius: 100px; background: var(--tag-bg); color: var(--tag-text); font-size: 0.72rem; letter-spacing: 0.06em; font-weight: 500; }
+    .post-date { color: var(--muted2); font-size: 0.78rem; }
+    .read-time { color: var(--muted2); font-size: 0.78rem; }
+    .views-badge { display: flex; align-items: center; gap: 4px; color: var(--muted2); font-size: 0.78rem; }
+
+    .grid-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+    .section-label { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted2); margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    #posts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .post-card { background: var(--card); padding: 1.8rem; text-decoration: none; color: inherit; transition: background 0.25s; display: flex; flex-direction: column; min-height: 250px; }
+    .post-card:hover { background: var(--bg3); }
+    .post-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; font-weight: 400; line-height: 1.3; margin-bottom: 0.6rem; flex: 1; }
+    .post-card p { color: var(--muted); font-size: 0.82rem; line-height: 1.7; margin-bottom: 1rem; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 0.9rem; border-top: 1px solid var(--border); }
+    .card-footer span { font-size: 0.76rem; color: var(--muted2); }
+    .arrow { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.75rem; transition: all 0.2s; }
+    .post-card:hover .arrow { border-color: var(--accent); color: var(--accent); }
+
+    .empty-state { grid-column: 1/-1; padding: 4rem; text-align: center; color: var(--muted); font-size: 0.9rem; }
+
+    .loading { display: flex; justify-content: center; align-items: center; padding: 5rem; color: var(--muted); font-size: 0.9rem; gap: 0.8rem; }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeUp 0.6s ease both; }
+
+    .newsletter { max-width: 1100px; margin: 0 auto; padding: 0 2rem 6rem; }
+    .newsletter-inner { border: 1px solid var(--border); border-radius: 16px; padding: 3rem; text-align: center; background: var(--card); }
+    .newsletter-inner h2 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 400; margin-bottom: 0.8rem; }
+    .newsletter-inner p { color: var(--muted); font-size: 0.92rem; margin-bottom: 1.8rem; }
+    .nl-form { display: flex; gap: 0.8rem; max-width: 400px; margin: 0 auto; }
+    .nl-form input { flex: 1; padding: 0.7rem 1.1rem; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; outline: none; transition: border-color 0.2s; }
+    .nl-form input:focus { border-color: var(--accent); }
+    .nl-form button { padding: 0.7rem 1.3rem; border-radius: 8px; border: none; background: var(--accent); color: #0a0a0a; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .nl-form button:hover { background: var(--accent2); }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted2); font-size: 0.8rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    @media (max-width: 768px) {
+      .featured-post { grid-template-columns: 1fr; }
+      .feat-visual { min-height: 160px; }
+      #posts-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .nl-form { flex-direction: column; }
+      .controls { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 900px) { #posts-grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="https://sarikaportfolio-gilt.vercel.app/" class="nav-brand">SA</a>
+  <ul class="nav-links">
+    <li><a href="https://sarikaportfolio-gilt.vercel.app/#about">About</a></li>
+    <li><a href="https://sarikaportfolio-gilt.vercel.app/#experience">Experience</a></li>
+    <li><a href="https://sarikaportfolio-gilt.vercel.app/#achievements">Impact</a></li>
+    <li><a href="blog.html" class="active">Insights</a></li>
+    <li><a href="https://sarikaportfolio-gilt.vercel.app/#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero fade-in">
+  <p class="eyebrow">Insights &amp; Perspectives</p>
+  <h1>Thoughts on <em>AI,</em><br>delivery &amp; leadership</h1>
+  <p>Practical perspectives from two decades of enterprise transformation — S2P, AI-led delivery, governance, and the future of program management.</p>
+</section>
+
+<div class="controls fade-in">
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-cat="All">All</button>
+  </div>
+  <div class="sort-group">
+    <span class="sort-label">Sort by</span>
+    <select class="sort-select" id="sort-select">
+      <option value="latest">Latest</option>
+      <option value="views">Most Viewed</option>
+      <option value="popular">Popularity Score</option>
+    </select>
+  </div>
+</div>
+
+<div class="featured-wrap" id="featured-wrap"></div>
+
+<div class="grid-section">
+  <p class="section-label" id="grid-label">All articles</p>
+  <div id="posts-grid">
+    <div class="loading">
+      <div class="spinner"></div>
+      Loading articles…
+    </div>
+  </div>
+</div>
+
+<div class="newsletter">
+  <div class="newsletter-inner">
+    <h2>Stay in the conversation</h2>
+    <p>New articles on AI-led delivery, S2P transformation, and program leadership — no fluff, no spam.</p>
+    <div class="nl-form">
+      <input type="email" placeholder="your@email.com" />
+      <button>Subscribe</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Sarika Arthamwar &nbsp;·&nbsp; <a href="https://sarikaportfolio-gilt.vercel.app/">Back to Portfolio</a> &nbsp;·&nbsp; Pune, India</p>
+</footer>
+
+<script>
+  // ─────────────────────────────────────────────────────────────────────
+  // CONFIGURATION — replace SHEET_ID with your Google Sheet's published CSV URL
+  // Steps: File → Share → Publish to web → Sheet1 → CSV → Copy link
+  // ─────────────────────────────────────────────────────────────────────
+  const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/17VW4_WcovTIWzguIEg8Em2fdUX1w7Q3XfGBoo4L8DOI/edit?usp=sharing';
+
+  // Fallback sample data (shown when sheet not yet configured)
+  const SAMPLE_POSTS = [
+    { id:'1', title:'How AI Agents Are Reshaping Enterprise S2P Delivery', excerpt:'After building Playwright-based validation frameworks and AI agents for RTM at scale, here\'s what I\'ve learned about where AI genuinely accelerates delivery — and where it still needs a human hand.', category:'AI & Automation', date:'2025-03-15', readTime:'7', views:1240, popularity:98, slug:'ai-agents-s2p' },
+    { id:'2', title:'Building Delivery Governance That Actually Works', excerpt:'Most governance models look good in slide decks and collapse under real program pressure. Here\'s what I\'ve seen work across multi-geography portfolios.', category:'Governance', date:'2025-02-10', readTime:'5', views:890, popularity:85, slug:'delivery-governance' },
+    { id:'3', title:'The CxO Conversation: What It Takes to Earn the Room', excerpt:'Engaging executive stakeholders on enterprise programs is a skill built over years of failure and iteration. A few hard-won patterns.', category:'Leadership', date:'2025-01-22', readTime:'6', views:1050, popularity:92, slug:'cxo-conversation' },
+    { id:'4', title:'30% Faster: The Real Story Behind Implementation Acceleration', excerpt:'The headline is cutting implementation time by 30%. The reality behind it involves rethinking documentation, validation, and handoffs from the ground up.', category:'S2P & Procurement', date:'2024-12-05', readTime:'8', views:760, popularity:78, slug:'faster-implementation' },
+    { id:'5', title:'From RTM to AI: Automating Requirement Traceability at Scale', excerpt:'Requirement-to-delivery gaps are one of the most expensive problems in enterprise programs. Here\'s how we used AI agents to close them.', category:'AI & Automation', date:'2024-11-18', readTime:'9', views:1100, popularity:94, slug:'rtm-ai-automation' },
+    { id:'6', title:'20 Years In: What Enterprise Transformation Actually Teaches You', excerpt:'Spanning ERP, CLM, S2P and SaaS — the patterns that hold across every domain and every decade of delivery work.', category:'Career', date:'2024-10-30', readTime:'10', views:920, popularity:88, slug:'twenty-years' },
+  ];
+
+  let allPosts = [];
+  let activeCategory = 'All';
+  let activeSort = 'latest';
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+  }
+
+  function formatViews(n) {
+    return n >= 1000 ? (n/1000).toFixed(1) + 'k' : String(n);
+  }
+
+  function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+    return lines.slice(1).map(line => {
+      const vals = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
+      const obj = {};
+      headers.forEach((h, i) => {
+        let v = (vals[i] || '').trim().replace(/^"|"$/g,'');
+        obj[h] = v;
+      });
+      obj.views = parseInt(obj.views) || 0;
+      obj.popularity = parseInt(obj.popularity) || 0;
+      return obj;
+    }).filter(p => p.title);
+  }
+
+  async function loadPosts() {
+    if (SHEET_CSV_URL === 'https://docs.google.com/spreadsheets/d/17VW4_WcovTIWzguIEg8Em2fdUX1w7Q3XfGBoo4L8DOI/edit?usp=sharing') {
+      allPosts = SAMPLE_POSTS;
+      render();
+      return;
+    }
+    try {
+      const res = await fetch(SHEET_CSV_URL);
+      const text = await res.text();
+      allPosts = parseCSV(text);
+      render();
+    } catch(e) {
+      allPosts = SAMPLE_POSTS;
+      render();
+    }
+  }
+
+  function getFiltered() {
+    let posts = activeCategory === 'All' ? [...allPosts] : allPosts.filter(p => p.category === activeCategory);
+    if (activeSort === 'latest') posts.sort((a,b) => new Date(b.date) - new Date(a.date));
+    else if (activeSort === 'views') posts.sort((a,b) => b.views - a.views);
+    else if (activeSort === 'popular') posts.sort((a,b) => b.popularity - a.popularity);
+    return posts;
+  }
+
+  function buildCategories() {
+    const cats = ['All', ...new Set(allPosts.map(p => p.category))];
+    const f = document.getElementById('filters');
+    f.innerHTML = cats.map(c =>
+      `<button class="filter-btn${c === activeCategory ? ' active' : ''}" data-cat="${c}">${c}</button>`
+    ).join('');
+    f.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.dataset.cat;
+        render();
+      });
+    });
+  }
+
+  function postURL(post) {
+    return `post.html?id=${post.id || post.slug}`;
+  }
+
+  function renderFeatured(post) {
+    if (!post) { document.getElementById('featured-wrap').innerHTML = ''; return; }
+    document.getElementById('featured-wrap').innerHTML = `
+      <a href="${postURL(post)}" class="featured-post">
+        <div class="feat-visual">
+          <span class="feat-badge">FEATURED</span>
+          <span class="feat-big">01</span>
+        </div>
+        <div class="feat-content">
+          <div class="post-meta">
+            <span class="tag">${post.category}</span>
+            <span class="post-date">${formatDate(post.date)}</span>
+            <span class="read-time">· ${post.readTime} min read</span>
+            <span class="views-badge">· ${formatViews(post.views)} views</span>
+          </div>
+          <h2>${post.title}</h2>
+          <p>${post.excerpt}</p>
+          <span class="read-link">Read article <span>→</span></span>
+        </div>
+      </a>`;
+  }
+
+  function renderGrid(posts) {
+    const grid = document.getElementById('posts-grid');
+    const label = document.getElementById('grid-label');
+    const sortLabel = { latest: 'Latest articles', views: 'Most viewed', popular: 'Most popular' }[activeSort];
+    label.textContent = activeCategory === 'All' ? sortLabel : `${activeCategory} · ${sortLabel}`;
+
+    if (posts.length === 0) {
+      grid.innerHTML = '<div class="empty-state">No articles in this category yet.</div>';
+      return;
+    }
+    grid.innerHTML = posts.map(p => `
+      <a href="${postURL(p)}" class="post-card">
+        <div class="post-meta">
+          <span class="tag">${p.category}</span>
+          <span class="post-date">${formatDate(p.date)}</span>
+        </div>
+        <h3>${p.title}</h3>
+        <p>${p.excerpt}</p>
+        <div class="card-footer">
+          <span>${p.readTime} min · ${formatViews(p.views)} views</span>
+          <div class="arrow">→</div>
+        </div>
+      </a>`).join('');
+  }
+
+  function render() {
+    buildCategories();
+    const filtered = getFiltered();
+    renderFeatured(filtered[0]);
+    renderGrid(filtered.slice(1));
+  }
+
+  document.getElementById('sort-select').addEventListener('change', e => {
+    activeSort = e.target.value;
+    render();
+  });
+
+  loadPosts();
+</script>
+</body>
+</html>
