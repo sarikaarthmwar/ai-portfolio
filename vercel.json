@@ -1,3 +1,13 @@
 {
-  "version": 2
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/leadership-style-assessment",
+      "destination": "/leadership-style-assessment/index.html"
+    },
+    {
+      "source": "/leadership-style-assessment/",
+      "destination": "/leadership-style-assessment/index.html"
+    }
+  ]
 }
